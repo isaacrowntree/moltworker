@@ -26,9 +26,11 @@ https://your-worker.workers.dev/?token=YOUR_TOKEN
 
 Replace `your-worker` with your actual worker subdomain and `YOUR_TOKEN` with the token you set.
 
-**Note:** The first request may take 1-2 minutes while the container starts. You'll also need to:
-1. [Set up Cloudflare Access](#setting-up-the-admin-ui) to protect the admin UI
-2. [Pair your device](#device-pairing) via the admin UI at `/_admin/`
+**Note:** The first request may take 1-2 minutes while the container starts.
+
+> **Important:** You will not be able to use the Control UI until you complete the following steps. You MUST:
+> 1. [Set up Cloudflare Access](#setting-up-the-admin-ui) to protect the admin UI
+> 2. [Pair your device](#device-pairing) via the admin UI at `/_admin/`
 
 ## Setting Up the Admin UI
 
