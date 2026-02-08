@@ -29,6 +29,7 @@ import { createAccessMiddleware } from './auth';
 import { ensureMoltbotGateway, findExistingMoltbotProcess, syncToR2 } from './gateway';
 import { publicRoutes, api, adminUi, debug, cdp } from './routes';
 import { redactSensitiveParams } from './utils/logging';
+import { runMonitoringChecks } from './monitoring';
 import loadingPageHtml from './assets/loading.html';
 import configErrorHtml from './assets/config-error.html';
 
@@ -469,6 +470,13 @@ async function scheduled(
     console.log('[cron] Backup sync completed successfully at', result.lastSync);
   } else {
     console.error('[cron] Backup sync failed:', result.error, result.details || '');
+  }
+
+  // Run synthetic monitoring checks
+  try {
+    await runMonitoringChecks(env);
+  } catch (err) {
+    console.error('[cron] Monitoring checks failed:', err);
   }
 }
 

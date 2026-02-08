@@ -137,3 +137,42 @@ export async function triggerSync(): Promise<SyncResponse> {
     method: 'POST',
   });
 }
+
+export interface MonitoringHistoryEntry {
+  timestamp: string;
+  status: 'unknown' | 'healthy' | 'degraded' | 'unhealthy';
+  responseTimeMs: number;
+  error: string | null;
+}
+
+export interface MonitoringCheckStatus {
+  id: string;
+  name: string;
+  type: string;
+  url: string;
+  tags: string[];
+  status: 'unknown' | 'healthy' | 'degraded' | 'unhealthy';
+  consecutiveFailures: number;
+  lastCheck: string | null;
+  lastSuccess: string | null;
+  lastError: string | null;
+  responseTimeMs: number | null;
+  history: MonitoringHistoryEntry[];
+  uptimePercent: number | null;
+}
+
+export interface MonitoringStatusResponse {
+  overall: 'healthy' | 'degraded' | 'unhealthy';
+  checks: MonitoringCheckStatus[];
+  lastRun: string | null;
+  config: {
+    defaultFailureThreshold: number;
+    defaultTimeoutMs: number;
+    channels: Array<{ type: string; enabled: boolean; tags?: string[] }>;
+  };
+  error?: string;
+}
+
+export async function getMonitoringStatus(): Promise<MonitoringStatusResponse> {
+  return apiRequest<MonitoringStatusResponse>('/monitoring');
+}

@@ -1,0 +1,26 @@
+.nav {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.nav-link {
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  background-color: var(--surface-hover);
+  text-decoration: none;
+}
+
+.nav-link.active {
+  color: var(--text-primary);
+  background-color: var(--surface-hover);
+}

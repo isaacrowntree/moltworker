@@ -1,0 +1,400 @@
+/* Monitoring Dashboard — Datadog-style */
+
+.monitoring-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Hero Section ── */
+.hero-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+}
+
+.hero-section.hero-healthy {
+  border-left: 4px solid var(--success-color);
+}
+
+.hero-section.hero-degraded {
+  border-left: 4px solid var(--warning-color);
+}
+
+.hero-section.hero-unhealthy {
+  border-left: 4px solid var(--error-color);
+}
+
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hero-status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hero-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.hero-stat {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ── Status dots ── */
+.hero-dot,
+.card-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.card-dot {
+  width: 10px;
+  height: 10px;
+}
+
+.dot-healthy {
+  background-color: var(--success-color);
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+}
+
+.dot-degraded {
+  background-color: var(--warning-color);
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.5);
+}
+
+.dot-unhealthy {
+  background-color: var(--error-color);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+  animation: pulse-red 2s ease-in-out infinite;
+}
+
+.dot-unknown {
+  background-color: var(--text-muted);
+}
+
+@keyframes pulse-red {
+  0%,
+  100% {
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.8);
+  }
+}
+
+/* ── Cards Grid ── */
+.checks-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Check Card ── */
+.check-card {
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.card-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.uptime-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Status badges (reused from existing) */
+.status-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.status-badge.healthy {
+  background-color: rgba(74, 222, 128, 0.2);
+  color: var(--success-color);
+}
+
+.status-badge.degraded {
+  background-color: rgba(251, 191, 36, 0.2);
+  color: var(--warning-color);
+}
+
+.status-badge.unhealthy {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: var(--error-color);
+}
+
+.status-badge.unknown {
+  background-color: rgba(107, 114, 128, 0.2);
+  color: var(--text-muted);
+}
+
+/* ── Visualization section ── */
+.card-viz {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.viz-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* ── Status Timeline Bar ── */
+.timeline-container {
+  position: relative;
+}
+
+.timeline-bar {
+  display: flex;
+  gap: 1px;
+  height: 24px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--surface-hover);
+}
+
+.timeline-segment {
+  flex: 1;
+  min-width: 0;
+  transition: opacity 0.15s;
+  cursor: default;
+}
+
+.timeline-segment:hover {
+  opacity: 0.7;
+}
+
+.timeline-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* ── Response Sparkline ── */
+.sparkline-container {
+  position: relative;
+}
+
+.sparkline-bar {
+  display: flex;
+  gap: 1px;
+  height: 32px;
+  align-items: flex-end;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--surface-hover);
+}
+
+.sparkline-segment {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  cursor: default;
+}
+
+.sparkline-fill {
+  width: 100%;
+  border-radius: 1px 1px 0 0;
+  transition: opacity 0.15s;
+  min-height: 0;
+}
+
+.sparkline-segment:hover .sparkline-fill {
+  opacity: 0.7;
+}
+
+/* ── Tooltips ── */
+.timeline-tooltip {
+  position: absolute;
+  top: -48px;
+  transform: translateX(-50%);
+  background: #0d1117;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.375rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  z-index: 10;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.tooltip-status {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tooltip-time {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.tooltip-ms {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Card Footer ── */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.card-footer-left {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.footer-item {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.footer-muted {
+  color: var(--text-muted);
+}
+
+.card-tags {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.tag {
+  font-size: 0.65rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  background-color: var(--surface-hover);
+  color: var(--text-muted);
+}
+
+.card-error {
+  font-size: 0.75rem;
+  color: var(--error-color);
+  background: rgba(239, 68, 68, 0.08);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .hero-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+  }
+
+  .hero-title {
+    font-size: 1.1rem;
+  }
+
+  .hero-meta {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .check-card {
+    padding: 1rem;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-header-right {
+    align-self: flex-end;
+  }
+
+  .card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
