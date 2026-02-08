@@ -103,6 +103,25 @@ describe('alerts', () => {
 
       expect(newState.lastError).toBe('previous error');
     });
+
+    it('handles legacy state without history field', () => {
+      // State loaded from R2 before history was added
+      const legacyState = {
+        id: 'test',
+        status: 'healthy' as const,
+        consecutiveFailures: 0,
+        lastCheck: '2026-01-01T00:00:00Z',
+        lastSuccess: '2026-01-01T00:00:00Z',
+        lastError: null,
+        responseTimeMs: 100,
+      };
+
+      // @ts-expect-error -- simulating legacy state without history
+      const { newState } = computeTransition(legacyState, successResult, 2);
+
+      expect(newState.history).toEqual([]);
+      expect(newState.status).toBe('healthy');
+    });
   });
 
   describe('shouldChannelReceive', () => {

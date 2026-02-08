@@ -36,6 +36,7 @@ export function computeTransition(
   const now = new Date().toISOString();
   const updated: CheckState = {
     ...state,
+    history: state.history ?? [],
     lastCheck: now,
     responseTimeMs: result.responseTimeMs,
   };
