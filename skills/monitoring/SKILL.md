@@ -83,14 +83,50 @@ curl -s "${BASE}/incidents${SECRET}&check_id=<check-id>&status=open&limit=20" | 
 
 Query params: `check_id`, `status` (open|resolved), `limit`
 
-### Alert Rules (read-only)
+### Alert Rules
 
 ```bash
 # List configured alert rules
 curl -s "${BASE}/alert-rules${SECRET}" | jq
+
+# Create an alert rule (channel required)
+curl -s -X POST "${BASE}/alert-rules${SECRET}" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "channel": "gateway",
+    "check_id": null,
+    "on_failure": true,
+    "on_recovery": true
+  }' | jq
+
+# Delete an alert rule
+curl -s -X DELETE "${BASE}/alert-rules/<rule-id>${SECRET}" | jq
 ```
 
-Alert rules are configured in D1 directly or via config sync. The API currently only supports reading them.
+Fields: `channel` (required), `check_id`, `group_id`, `config`, `on_failure`, `on_recovery`, `enabled`
+
+### Maintenance Windows
+
+```bash
+# List maintenance windows
+curl -s "${BASE}/maintenance${SECRET}" | jq
+
+# Create a maintenance window (starts_at, ends_at required)
+curl -s -X POST "${BASE}/maintenance${SECRET}" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "starts_at": "2026-02-09T00:00:00Z",
+    "ends_at": "2026-02-09T06:00:00Z",
+    "reason": "Planned deploy",
+    "suppress_alerts": true,
+    "skip_checks": false
+  }' | jq
+
+# Delete a maintenance window
+curl -s -X DELETE "${BASE}/maintenance/<window-id>${SECRET}" | jq
+```
+
+Fields: `starts_at` (required), `ends_at` (required), `check_id`, `group_id`, `reason`, `suppress_alerts`, `skip_checks`
 
 ### Bulk Config (export/import)
 
@@ -106,7 +142,7 @@ curl -s -X PUT "${BASE}/config${SECRET}" \
   ]}' | jq
 ```
 
-Note: PUT `/api/config` only syncs checks. Alert rules in the GET export response are read-only.
+Note: PUT `/api/config` only syncs checks. Alert rules are managed separately via the alert-rules endpoints.
 
 ## Check Configuration
 
