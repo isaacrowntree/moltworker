@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import AdminPage from './pages/AdminPage';
 import MonitoringPage from './pages/MonitoringPage';
+import CheckDetailPage from './pages/CheckDetailPage';
 import './App.css';
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<AdminPage />} />
             <Route path="/monitoring" element={<MonitoringPage />} />
+            <Route path="/monitoring/:checkId" element={<CheckDetailPage />} />
           </Routes>
         </main>
       </div>

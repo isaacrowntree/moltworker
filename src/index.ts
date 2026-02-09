@@ -29,7 +29,8 @@ import { createAccessMiddleware } from './auth';
 import { ensureMoltbotGateway, findExistingMoltbotProcess, syncToR2 } from './gateway';
 import { publicRoutes, api, adminUi, debug, cdp } from './routes';
 import { redactSensitiveParams } from './utils/logging';
-import { runMonitoringChecks } from './monitoring';
+import { timingSafeEqual } from './utils/crypto';
+import { monitor } from './monitor';
 import loadingPageHtml from './assets/loading.html';
 import configErrorHtml from './assets/config-error.html';
 
@@ -151,6 +152,34 @@ app.route('/', publicRoutes);
 
 // Mount CDP routes (uses shared secret auth via query param, not CF Access)
 app.route('/cdp', cdp);
+
+// Mount monitoring routes with dual-auth: CF Access cookies OR ?secret=MONITORING_API_KEY
+// This allows both admin SPA (CF Access) and container/CLI (query param) access
+app.use('/monitoring/*', async (c, next) => {
+  // In dev/test mode, skip auth entirely
+  if (c.env.DEV_MODE === 'true' || c.env.E2E_TEST_MODE === 'true') {
+    return next();
+  }
+
+  // Check for query param secret first (container/CLI access)
+  const url = new URL(c.req.url);
+  const providedSecret = url.searchParams.get('secret');
+  const expectedSecret = c.env.MONITORING_API_KEY;
+
+  if (providedSecret && expectedSecret && timingSafeEqual(providedSecret, expectedSecret)) {
+    return next();
+  }
+
+  // Fall through to CF Access auth
+  const acceptsHtml = c.req.header('Accept')?.includes('text/html');
+  const middleware = createAccessMiddleware({
+    type: acceptsHtml ? 'html' : 'json',
+    redirectOnMissing: acceptsHtml,
+  });
+
+  return middleware(c, next);
+});
+app.route('/monitoring', monitor.app);
 
 // =============================================================================
 // PROTECTED ROUTES: Cloudflare Access authentication required
@@ -474,7 +503,7 @@ async function scheduled(
 
   // Run synthetic monitoring checks
   try {
-    await runMonitoringChecks(env);
+    await monitor.runChecks(env);
   } catch (err) {
     console.error('[cron] Monitoring checks failed:', err);
   }

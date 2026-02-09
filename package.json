@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "@cloudflare/puppeteer": "^1.0.5",
-    "hono": "^4.11.6",
+    "clawdwatch": "file:../clawdwatch",
+    "hono": "^4.11.9",
     "jose": "^6.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

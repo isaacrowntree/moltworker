@@ -79,6 +79,21 @@
 			"*/5 * * * *"
 		],
 	},
+	// D1 database for monitoring config (checks, incidents, alert rules, maintenance windows)
+	"d1_databases": [
+		{
+			"binding": "MONITORING_DB",
+			"database_name": "moltworker-monitoring",
+			"database_id": "347ebdde-4ffe-401d-a3a3-e167d31e7561",
+		},
+	],
+	// Analytics Engine for monitoring time-series data (check results, response times)
+	"analytics_engine_datasets": [
+		{
+			"binding": "MONITORING_AE",
+			"dataset": "monitoring_checks",
+		},
+	],
 	// Browser Rendering binding for CDP shim
 	"browser": {
 		"binding": "BROWSER",
@@ -113,4 +128,7 @@
 	// - R2_ACCESS_KEY_ID: R2 access key ID (from R2 API tokens)
 	// - R2_SECRET_ACCESS_KEY: R2 secret access key (from R2 API tokens)
 	// - CF_ACCOUNT_ID: Your Cloudflare account ID (for R2 endpoint URL)
+	//
+	// Monitoring (optional):
+	// - MONITORING_API_KEY: Bearer token for monitoring API (used by CLI + moltbot skill)
 }

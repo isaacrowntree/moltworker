@@ -7,6 +7,9 @@ export interface MoltbotEnv {
   Sandbox: DurableObjectNamespace<Sandbox>;
   ASSETS: Fetcher; // Assets binding for admin UI static files
   MOLTBOT_BUCKET: R2Bucket; // R2 bucket for persistent storage
+  MONITORING_DB: D1Database; // D1 database for monitoring config
+  MONITORING_AE: AnalyticsEngineDataset; // Analytics Engine for monitoring metrics
+  MONITORING_API_KEY?: string; // Bearer token for monitoring API (CLI + moltbot skill)
   // Cloudflare AI Gateway configuration (preferred)
   CF_AI_GATEWAY_ACCOUNT_ID?: string; // Cloudflare account ID for AI Gateway
   CF_AI_GATEWAY_GATEWAY_ID?: string; // AI Gateway ID
@@ -42,12 +45,6 @@ export interface MoltbotEnv {
   BROWSER?: Fetcher;
   CDP_SECRET?: string; // Shared secret for CDP endpoint authentication
   WORKER_URL?: string; // Public URL of the worker (for CDP endpoint)
-  // Monitoring alert channels
-  SLACK_WEBHOOK_URL?: string; // Slack incoming webhook URL for monitoring alerts
-  MONITORING_TELEGRAM_CHAT_ID?: string; // Telegram chat ID for monitoring alerts
-  RESEND_API_KEY?: string; // Resend API key for email alerts
-  RESEND_FROM_EMAIL?: string; // Sender email address for Resend (e.g. alerts@campermate.com)
-  MONITORING_EMAIL_TO?: string; // Recipient email address for monitoring alerts
 }
 
 /**

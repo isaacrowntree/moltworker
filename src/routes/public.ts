@@ -2,8 +2,6 @@ import { Hono } from 'hono';
 import type { AppEnv } from '../types';
 import { MOLTBOT_PORT } from '../config';
 import { findExistingMoltbotProcess } from '../gateway';
-import { loadState } from '../monitoring';
-import { monitoringConfig } from '../monitoring/checks';
 
 /**
  * Public routes - NO Cloudflare Access authentication required
@@ -56,40 +54,6 @@ publicRoutes.get('/api/status', async (c) => {
       status: 'error',
       error: err instanceof Error ? err.message : 'Unknown error',
     });
-  }
-});
-
-// GET /api/monitoring/status - Public monitoring status (no auth required)
-publicRoutes.get('/api/monitoring/status', async (c) => {
-  try {
-    const state = await loadState(c.env.MOLTBOT_BUCKET);
-    const checks = monitoringConfig.checks.map((check) => {
-      const checkState = state.checks[check.id];
-      const history = checkState?.history ?? [];
-      const successCount = history.filter((h) => h.status === 'healthy').length;
-      const uptimePercent = history.length > 0
-        ? Math.round((successCount / history.length) * 10000) / 100
-        : null;
-      return {
-        id: check.id,
-        name: check.name,
-        status: checkState?.status ?? 'unknown',
-        lastCheck: checkState?.lastCheck ?? null,
-        responseTimeMs: checkState?.responseTimeMs ?? null,
-        uptimePercent,
-      };
-    });
-
-    const hasUnhealthy = checks.some((c) => c.status === 'unhealthy');
-    const hasDegraded = checks.some((c) => c.status === 'degraded');
-    const overall = hasUnhealthy ? 'unhealthy' : hasDegraded ? 'degraded' : 'healthy';
-
-    return c.json({ overall, checks, lastRun: state.lastRun });
-  } catch (err) {
-    return c.json(
-      { error: err instanceof Error ? err.message : 'Unknown error' },
-      500,
-    );
   }
 });
 

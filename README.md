@@ -475,6 +475,48 @@ OpenClaw in Cloudflare Sandbox uses multiple authentication layers:
 
 On Windows, Git may check out shell scripts with CRLF line endings instead of LF. This causes `start-openclaw.sh` to fail with exit code 126 inside the Linux container. Ensure your repository uses LF line endings — configure Git with `git config --global core.autocrlf input` or add a `.gitattributes` file with `* text=auto eol=lf`. See [#64](https://github.com/cloudflare/moltworker/issues/64) for details.
 
+## Monitoring
+
+Synthetic monitoring powered by [clawdwatch](https://github.com/openclaw/clawdwatch). Checks run every 5 minutes via the Worker's scheduled handler.
+
+### Current Features
+- **Dashboard** at `/_admin/monitoring` — card and table views with status timeline and response time sparklines (toggle between views, preference persisted)
+- **Check Detail Pages** at `/_admin/monitoring/:checkId` — drill into individual checks with time range filtering (1h/6h/12h/24h), uptime stats, response time charts, and a test runs table
+- **Public status endpoint** at `GET /api/monitoring/status`
+- **Embedded clawdwatch dashboard** at `/monitoring/` (CF Access protected)
+- **Alerts** posted to moltbot gateway — agent decides notification channels
+
+### Roadmap
+
+#### Data & History
+- [ ] **Longer history retention** — aggregate and store 7d/30d data in R2 for extended time ranges
+- [ ] **Incident timeline** — log state transitions (healthy→unhealthy) as incidents with duration tracking
+- [ ] **Response time percentiles** — track p50/p95/p99 in addition to average
+
+#### Check Management
+- [ ] **Pause/resume checks** — disable individual checks from the admin UI
+- [ ] **Manual "Run Now"** — trigger an immediate check from the detail page
+- [ ] **Add/edit checks from UI** — create and configure checks without code changes
+- [ ] **Check groups/suites** — organize checks into named groups
+
+#### Alerts & Notifications
+- [ ] **Notification preferences** — configure alert channels (Slack/Telegram/email) per check from the UI
+- [ ] **Escalation policies** — alert different people after different failure durations
+- [ ] **Maintenance windows** — suppress alerts during planned downtime
+
+#### Advanced Checks
+- [ ] **Network timing breakdown** — capture DNS, connect, TLS, TTFB separately (requires clawdwatch changes)
+- [ ] **Multi-region checks** — run checks from multiple Cloudflare locations and compare results
+- [ ] **Browser checks** — Playwright-based checks using Cloudflare Browser Rendering
+- [ ] **Multi-step API checks** — chain multiple HTTP requests with variable extraction
+
+#### Dashboard & Reporting
+- [ ] **Status page** — public-facing status page powered by monitoring data
+- [ ] **Uptime reports** — weekly/monthly SLA reports with uptime percentages
+- [ ] **Faceted filtering** — filter checks by type, status, tags (like Datadog sidebar)
+- [ ] **Bulk actions** — run/pause/delete multiple checks at once
+- [ ] **Status page** — public-facing status page powered by monitoring data
+
 ## Links
 
 - [OpenClaw](https://github.com/openclaw/openclaw)

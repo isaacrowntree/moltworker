@@ -169,20 +169,31 @@ export interface MonitoringCheckStatus {
   responseTimeMs: number | null;
   history: MonitoringHistoryEntry[];
   uptimePercent: number | null;
+  enabled: boolean;
 }
 
 export interface MonitoringStatusResponse {
   overall: 'healthy' | 'degraded' | 'unhealthy';
   checks: MonitoringCheckStatus[];
   lastRun: string | null;
-  config: {
-    defaultFailureThreshold: number;
-    defaultTimeoutMs: number;
-    channels: Array<{ type: string; enabled: boolean; tags?: string[] }>;
-  };
   error?: string;
 }
 
 export async function getMonitoringStatus(): Promise<MonitoringStatusResponse> {
-  return apiRequest<MonitoringStatusResponse>('/monitoring');
+  // Fetch from clawdwatch's mounted API (protected by CF Access via route mount)
+  const response = await fetch('/monitoring/api/status', {
+    credentials: 'include',
+  });
+
+  if (response.status === 401) {
+    throw new AuthError('Unauthorized - please log in via Cloudflare Access');
+  }
+
+  const data = (await response.json()) as MonitoringStatusResponse & { error?: string };
+
+  if (!response.ok) {
+    throw new Error(data.error || `API error: ${response.status}`);
+  }
+
+  return data;
 }

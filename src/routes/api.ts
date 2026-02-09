@@ -9,8 +9,6 @@ import {
   waitForProcess,
 } from '../gateway';
 import { R2_MOUNT_PATH, MOLTBOT_PORT } from '../config';
-import { loadState } from '../monitoring';
-import { monitoringConfig } from '../monitoring/checks';
 
 // CLI commands can take 10-15 seconds to complete due to WebSocket connection overhead
 const CLI_TIMEOUT_MS = 20000;
@@ -336,56 +334,6 @@ adminApi.post('/gateway/restart', async (c) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return c.json({ error: errorMessage }, 500);
-  }
-});
-
-// GET /api/admin/monitoring - Full monitoring state for dashboard (protected)
-adminApi.get('/monitoring', async (c) => {
-  try {
-    const state = await loadState(c.env.MOLTBOT_BUCKET);
-    const checks = monitoringConfig.checks.map((check) => {
-      const checkState = state.checks[check.id];
-      const history = checkState?.history ?? [];
-      const successCount = history.filter((h) => h.status === 'healthy').length;
-      const uptimePercent = history.length > 0
-        ? Math.round((successCount / history.length) * 10000) / 100
-        : null;
-      return {
-        id: check.id,
-        name: check.name,
-        type: check.type,
-        url: check.url,
-        tags: check.tags ?? [],
-        status: checkState?.status ?? 'unknown',
-        consecutiveFailures: checkState?.consecutiveFailures ?? 0,
-        lastCheck: checkState?.lastCheck ?? null,
-        lastSuccess: checkState?.lastSuccess ?? null,
-        lastError: checkState?.lastError ?? null,
-        responseTimeMs: checkState?.responseTimeMs ?? null,
-        history,
-        uptimePercent,
-      };
-    });
-
-    const hasUnhealthy = checks.some((c) => c.status === 'unhealthy');
-    const hasDegraded = checks.some((c) => c.status === 'degraded');
-    const overall = hasUnhealthy ? 'unhealthy' : hasDegraded ? 'degraded' : 'healthy';
-
-    return c.json({
-      overall,
-      checks,
-      lastRun: state.lastRun,
-      config: {
-        defaultFailureThreshold: monitoringConfig.defaultFailureThreshold,
-        defaultTimeoutMs: monitoringConfig.defaultTimeoutMs,
-        channels: monitoringConfig.channels,
-      },
-    });
-  } catch (err) {
-    return c.json(
-      { error: err instanceof Error ? err.message : 'Unknown error' },
-      500,
-    );
   }
 });
 

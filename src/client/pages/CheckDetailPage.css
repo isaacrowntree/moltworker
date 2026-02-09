@@ -1,0 +1,368 @@
+/* Check Detail Page */
+
+.detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Back Link ── */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.back-link::before {
+  content: '\2190';
+}
+
+.back-link:hover {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+/* ── Detail Header ── */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem 2rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+}
+
+.detail-header-healthy {
+  border-left: 4px solid var(--success-color);
+}
+
+.detail-header-degraded {
+  border-left: 4px solid var(--warning-color);
+}
+
+.detail-header-unhealthy {
+  border-left: 4px solid var(--error-color);
+}
+
+.detail-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.detail-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.detail-meta {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.detail-meta-item {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.detail-url {
+  font-family: monospace;
+  color: var(--text-secondary);
+}
+
+.detail-header-right {
+  display: flex;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+/* ── Sections ── */
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.25rem 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: -0.5rem 0 0;
+}
+
+/* ── Properties Grid ── */
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.property {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.property-full {
+  grid-column: 1 / -1;
+}
+
+.property-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.property-value {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+.property-error {
+  color: var(--error-color);
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+/* ── Time Range Selector ── */
+.range-selector {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--bg-color);
+  padding: 0.2rem;
+  border-radius: 6px;
+}
+
+.range-btn {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.3rem 0.6rem;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.range-btn:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+.range-btn-active {
+  color: var(--text-primary);
+  background: var(--surface-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Stats Row ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--bg-color);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Detail Viz (larger versions) ── */
+.detail-viz {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-timeline-bar {
+  height: 32px;
+}
+
+.detail-sparkline-bar {
+  height: 48px;
+}
+
+/* ── Test Runs Table ── */
+.runs-table-container {
+  overflow-x: auto;
+}
+
+.runs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.runs-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.runs-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.runs-table tbody tr:hover {
+  background: var(--surface-hover);
+}
+
+.run-status {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.run-status-healthy {
+  background: rgba(74, 222, 128, 0.2);
+  color: var(--success-color);
+}
+
+.run-status-degraded {
+  background: rgba(251, 191, 36, 0.2);
+  color: var(--warning-color);
+}
+
+.run-status-unhealthy {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--error-color);
+}
+
+.run-time {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.run-time-ago {
+  color: var(--text-secondary);
+}
+
+.run-time-full {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.run-duration {
+  font-variant-numeric: tabular-nums;
+}
+
+.run-error {
+  color: var(--text-muted);
+  font-family: monospace;
+  font-size: 0.75rem;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.runs-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem 0.75rem !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .detail-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+  }
+
+  .detail-title {
+    font-size: 1.1rem;
+  }
+
+  .detail-meta {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .detail-section {
+    padding: 1rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .properties-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import {
   getMonitoringStatus,
   type MonitoringStatusResponse,
@@ -55,6 +56,14 @@ function formatTimeShort(iso: string): string {
   return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 }
 
+function safeHostname(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
+
 function formatMs(ms: number | null): string {
   if (ms === null) return '--';
   return `${ms}ms`;
@@ -69,10 +78,20 @@ function timeAgo(iso: string | null): string {
   return `${Math.floor(seconds / 86400)}d ago`;
 }
 
+type ViewMode = 'cards' | 'table';
+
 export default function MonitoringPage() {
   const [data, setData] = useState<MonitoringStatusResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<ViewMode>(() => {
+    return (localStorage.getItem('monitoring-view') as ViewMode) || 'cards';
+  });
+
+  const setViewMode = (mode: ViewMode) => {
+    setView(mode);
+    localStorage.setItem('monitoring-view', mode);
+  };
 
   const fetchData = useCallback(async () => {
     try {
@@ -124,6 +143,11 @@ export default function MonitoringPage() {
     ? Math.round((totalSuccess / allHistory.length) * 10000) / 100
     : null;
 
+  const typeCounts = new Map<string, number>();
+  for (const check of data.checks) {
+    typeCounts.set(check.type, (typeCounts.get(check.type) ?? 0) + 1);
+  }
+
   return (
     <div className="monitoring-page">
       <HeroSection
@@ -132,12 +156,28 @@ export default function MonitoringPage() {
         overallUptime={overallUptime}
         checkCount={data.checks.length}
         onRefresh={fetchData}
+        view={view}
+        onViewChange={setViewMode}
       />
-      <div className="checks-grid">
-        {data.checks.map((check) => (
-          <CheckCard key={check.id} check={check} />
-        ))}
-      </div>
+      {data.checks.length > 0 && view === 'table' && (
+        <div className="table-summary">
+          {Array.from(typeCounts.entries()).map(([type, count]) => (
+            <span key={type} className="type-count">{count} {type.toUpperCase()}</span>
+          ))}
+          <span className="type-count type-count-total">
+            Showing all {data.checks.length} test{data.checks.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+      )}
+      {view === 'cards' ? (
+        <div className="checks-grid">
+          {data.checks.map((check) => (
+            <CheckCard key={check.id} check={check} />
+          ))}
+        </div>
+      ) : (
+        <ChecksTable checks={data.checks} />
+      )}
       {data.checks.length === 0 && (
         <div className="empty-state">
           <p>No monitoring checks configured.</p>
@@ -153,12 +193,16 @@ function HeroSection({
   overallUptime,
   checkCount,
   onRefresh,
+  view,
+  onViewChange,
 }: {
   overall: string;
   lastRun: string | null;
   overallUptime: number | null;
   checkCount: number;
   onRefresh: () => void;
+  view: ViewMode;
+  onViewChange: (mode: ViewMode) => void;
 }) {
   return (
     <div className={`hero-section hero-${overall}`}>
@@ -189,9 +233,27 @@ function HeroSection({
           )}
         </div>
       </div>
-      <button className="btn btn-secondary btn-sm" onClick={onRefresh}>
-        Refresh
-      </button>
+      <div className="hero-actions">
+        <div className="view-toggle">
+          <button
+            className={`view-btn ${view === 'cards' ? 'view-btn-active' : ''}`}
+            onClick={() => onViewChange('cards')}
+            title="Card view"
+          >
+            Cards
+          </button>
+          <button
+            className={`view-btn ${view === 'table' ? 'view-btn-active' : ''}`}
+            onClick={() => onViewChange('table')}
+            title="Table view"
+          >
+            Table
+          </button>
+        </div>
+        <button className="btn btn-secondary btn-sm" onClick={onRefresh}>
+          Refresh
+        </button>
+      </div>
     </div>
   );
 }
@@ -201,6 +263,7 @@ function CheckCard({ check }: { check: MonitoringCheckStatus }) {
   const maxResponseTime = Math.max(...history.map((h) => h?.responseTimeMs ?? 0), 1);
 
   return (
+    <Link to={`/monitoring/${check.id}`} className="check-card-link">
     <div className="check-card">
       <div className="card-header">
         <div className="card-header-left">
@@ -248,11 +311,89 @@ function CheckCard({ check }: { check: MonitoringCheckStatus }) {
         </div>
       </div>
 
-      {check.lastError && (
+      {check.lastError && check.status !== 'healthy' && (
         <div className="card-error">
           {check.lastError}
         </div>
       )}
+    </div>
+    </Link>
+  );
+}
+
+function ChecksTable({ checks }: { checks: MonitoringCheckStatus[] }) {
+  return (
+    <div className="checks-table-container">
+      <table className="checks-table">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Type</th>
+            <th>Name</th>
+            <th>URL</th>
+            <th>Tags</th>
+            <th>Uptime</th>
+          </tr>
+        </thead>
+        <tbody>
+          {checks.map((check) => (
+            <tr key={check.id}>
+              <td>
+                <Link to={`/monitoring/${check.id}`} className="table-status-link">
+                  <span className={`status-badge ${check.status}`}>
+                    {statusLabel(check.status)}
+                  </span>
+                </Link>
+              </td>
+              <td className="table-type">{check.type.toUpperCase()}</td>
+              <td>
+                <Link to={`/monitoring/${check.id}`} className="table-name-link">
+                  {check.name}
+                </Link>
+              </td>
+              <td className="table-url">{safeHostname(check.url)}</td>
+              <td className="table-tags">
+                {check.tags.map((tag) => (
+                  <span key={tag} className="tag">{tag}</span>
+                ))}
+              </td>
+              <td className="table-uptime-cell">
+                <span className="table-uptime-pct" style={{
+                  color: check.uptimePercent !== null
+                    ? statusColor(check.uptimePercent >= 99 ? 'healthy' : check.uptimePercent >= 95 ? 'degraded' : 'unhealthy')
+                    : 'var(--text-muted)',
+                }}>
+                  {check.uptimePercent !== null ? `${check.uptimePercent}%` : '--'}
+                </span>
+                <MiniUptimeBar history={check.history} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function MiniUptimeBar({ history }: { history: MonitoringHistoryEntry[] }) {
+  // Show last 48 entries (4h) as a compact bar
+  const recent = history.slice(-48);
+  const padded = recent.length < 48
+    ? [...Array.from({ length: 48 - recent.length }, () => null), ...recent]
+    : recent;
+
+  return (
+    <div className="mini-uptime-bar">
+      {/* eslint-disable-next-line react/no-array-index-key -- fixed-position timeline slots */}
+      {padded.map((entry, i) => (
+        <div
+          key={i}
+          className="mini-uptime-seg"
+          style={{
+            backgroundColor: entry ? statusColor(entry.status) : 'var(--surface-hover)',
+          }}
+        />
+      ))}
     </div>
   );
 }

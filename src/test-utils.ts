@@ -13,6 +13,8 @@ export function createMockEnv(overrides: Partial<MoltbotEnv> = {}): MoltbotEnv {
     Sandbox: {} as any,
     ASSETS: {} as any,
     MOLTBOT_BUCKET: {} as any,
+    MONITORING_DB: {} as any,
+    MONITORING_AE: {} as any,
     ...overrides,
   };
 }
