@@ -189,6 +189,12 @@ if (process.env.OPENCLAW_DEV_MODE === 'true') {
     config.gateway.controlUi.allowInsecureAuth = true;
 }
 
+// Skills: point OpenClaw at /root/clawd/skills/ (Docker-copied custom skills)
+// The gateway doesn't scan CWD — only ~/.openclaw/skills, workspace, and extraDirs
+config.skills = config.skills || {};
+config.skills.load = config.skills.load || {};
+config.skills.load.extraDirs = ['/root/clawd/skills'];
+
 // Legacy AI Gateway base URL override:
 // ANTHROPIC_BASE_URL is picked up natively by the Anthropic SDK,
 // so we don't need to patch the provider config. Writing a provider
