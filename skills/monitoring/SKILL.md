@@ -203,6 +203,18 @@ Operators: `is`, `isNot`, `contains`, `notContains`, `matches` (regex)
 
 Operators: `contains`, `notContains`, `matches` (regex)
 
+#### JSON Path
+
+```json
+{ "type": "jsonPath", "path": "$.data.token", "operator": "isNot", "value": "" }
+{ "type": "jsonPath", "path": "$.items[0].id", "operator": "is", "value": "expected-id" }
+```
+
+Operators: `is`, `isNot`, `contains`, `notContains`, `matches` (regex).
+Path syntax: `$.field`, `$.nested.field`, `$.array[0].field`.
+Non-string values are stringified for comparison (e.g. `$.count` with value `"42"`).
+Missing paths fail the assertion. Use `isNot` with empty string for "not empty" checks.
+
 ## Example Check Configs
 
 **Simple health check:**
