@@ -108,6 +108,12 @@ export default function AdminPage() {
     fetchGatewayStatus();
   }, [fetchDevices, fetchStorageStatus, fetchGatewayStatus]);
 
+  // Poll gateway status every 15s so the badge stays current
+  useEffect(() => {
+    const id = setInterval(fetchGatewayStatus, 15000);
+    return () => clearInterval(id);
+  }, [fetchGatewayStatus]);
+
   const handleApprove = async (requestId: string) => {
     setActionInProgress(requestId);
     try {
@@ -144,9 +150,7 @@ export default function AdminPage() {
   };
 
   const handleRestartGateway = async () => {
-    const action = gatewayStatus?.status === 'stopped' ? 'start' : 'restart';
     if (
-      action === 'restart' &&
       !confirm(
         'Are you sure you want to restart the gateway? This will disconnect all clients temporarily.',
       )
@@ -273,21 +277,17 @@ export default function AdminPage() {
             )}
           </div>
           <button
-            className={`btn ${gatewayStatus?.status === 'stopped' ? 'btn-success' : 'btn-danger'}`}
+            className="btn btn-danger"
             onClick={handleRestartGateway}
             disabled={restartInProgress}
           >
             {restartInProgress && <ButtonSpinner />}
-            {restartInProgress
-              ? 'Starting...'
-              : gatewayStatus?.status === 'stopped'
-                ? 'Start Gateway'
-                : 'Restart Gateway'}
+            {restartInProgress ? 'Restarting...' : 'Restart Gateway'}
           </button>
         </div>
         <p className="hint">
           {gatewayStatus?.status === 'stopped'
-            ? 'The gateway is not running. Start it to enable device connections.'
+            ? 'The gateway is not running. It starts automatically on deploy — use restart to recover from errors.'
             : 'Restart the gateway to apply configuration changes or recover from errors. All connected clients will be temporarily disconnected.'}
         </p>
       </section>
