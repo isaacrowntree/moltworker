@@ -52,5 +52,10 @@ export function buildEnvVars(env: MoltbotEnv): Record<string, string> {
   if (env.MONITORING_API_KEY) envVars.MONITORING_API_KEY = env.MONITORING_API_KEY;
   if (env.PRICEWATCH_API_KEY) envVars.PRICEWATCH_API_KEY = env.PRICEWATCH_API_KEY;
 
+  // R2 persistence credentials (used by rclone in start-openclaw.sh)
+  if (env.R2_ACCESS_KEY_ID) envVars.R2_ACCESS_KEY_ID = env.R2_ACCESS_KEY_ID;
+  if (env.R2_SECRET_ACCESS_KEY) envVars.R2_SECRET_ACCESS_KEY = env.R2_SECRET_ACCESS_KEY;
+  if (env.R2_BUCKET_NAME) envVars.R2_BUCKET_NAME = env.R2_BUCKET_NAME;
+
   return envVars;
 }
