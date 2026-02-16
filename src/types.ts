@@ -10,6 +10,8 @@ export interface MoltbotEnv {
   MONITORING_DB: D1Database; // D1 database for monitoring config
   MONITORING_AE: AnalyticsEngineDataset; // Analytics Engine for monitoring metrics
   MONITORING_API_KEY?: string; // Bearer token for monitoring API (CLI + moltbot skill)
+  PRICEWATCH_AE?: AnalyticsEngineDataset; // Analytics Engine for price tracking metrics
+  PRICEWATCH_API_KEY?: string; // Bearer token for price tracking API (CLI + moltbot skill)
   // Cloudflare AI Gateway configuration (preferred)
   CF_AI_GATEWAY_ACCOUNT_ID?: string; // Cloudflare account ID for AI Gateway
   CF_AI_GATEWAY_GATEWAY_ID?: string; // AI Gateway ID

@@ -93,6 +93,10 @@
 			"binding": "MONITORING_AE",
 			"dataset": "monitoring_checks",
 		},
+		{
+			"binding": "PRICEWATCH_AE",
+			"dataset": "price_readings",
+		},
 	],
 	// Browser Rendering binding for CDP shim
 	"browser": {

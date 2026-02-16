@@ -22,6 +22,7 @@
   "dependencies": {
     "@cloudflare/puppeteer": "^1.0.5",
     "clawdwatch": "file:../clawdwatch",
+    "pricewatch": "github:isaacrowntree/pricewatch",
     "hono": "^4.11.9",
     "jose": "^6.0.0",
     "react": "^19.0.0",

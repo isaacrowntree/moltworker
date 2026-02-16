@@ -50,6 +50,7 @@ export function buildEnvVars(env: MoltbotEnv): Record<string, string> {
   if (env.CDP_SECRET) envVars.CDP_SECRET = env.CDP_SECRET;
   if (env.WORKER_URL) envVars.WORKER_URL = env.WORKER_URL;
   if (env.MONITORING_API_KEY) envVars.MONITORING_API_KEY = env.MONITORING_API_KEY;
+  if (env.PRICEWATCH_API_KEY) envVars.PRICEWATCH_API_KEY = env.PRICEWATCH_API_KEY;
 
   return envVars;
 }

@@ -70,8 +70,7 @@ CREATE TABLE maintenance_windows (
 
 -- Seed: initial checks (migrated from static config in monitor.ts)
 INSERT INTO checks (id, name, type, url, tags) VALUES
-  ('campermate-website', 'Campermate Website', 'api', 'https://www.campermate.com', '["production"]'),
-  ('sandbox-health', 'Moltworker Health', 'api', '{{WORKER_URL}}/sandbox-health', '["infrastructure"]');
+  ('campermate-website', 'Campermate Website', 'api', 'https://www.campermate.com', '["production"]');
 
 -- Seed: default alert rule (POST to moltbot gateway for all checks)
 INSERT INTO alert_rules (channel, config) VALUES

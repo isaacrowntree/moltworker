@@ -31,6 +31,7 @@ import { publicRoutes, api, adminUi, debug, cdp } from './routes';
 import { redactSensitiveParams } from './utils/logging';
 import { timingSafeEqual } from './utils/crypto';
 import { monitor } from './monitor';
+import { pricewatch } from './pricewatch';
 import loadingPageHtml from './assets/loading.html';
 import configErrorHtml from './assets/config-error.html';
 
@@ -180,6 +181,33 @@ app.use('/monitoring/*', async (c, next) => {
   return middleware(c, next);
 });
 app.route('/monitoring', monitor.app);
+
+// Mount price tracking routes with same dual-auth pattern
+app.use('/prices/*', async (c, next) => {
+  // In dev/test mode, skip auth entirely
+  if (c.env.DEV_MODE === 'true' || c.env.E2E_TEST_MODE === 'true') {
+    return next();
+  }
+
+  // Check for query param secret first (container/CLI access)
+  const url = new URL(c.req.url);
+  const providedSecret = url.searchParams.get('secret');
+  const expectedSecret = c.env.PRICEWATCH_API_KEY || c.env.MONITORING_API_KEY;
+
+  if (providedSecret && expectedSecret && timingSafeEqual(providedSecret, expectedSecret)) {
+    return next();
+  }
+
+  // Fall through to CF Access auth
+  const acceptsHtml = c.req.header('Accept')?.includes('text/html');
+  const middleware = createAccessMiddleware({
+    type: acceptsHtml ? 'html' : 'json',
+    redirectOnMissing: acceptsHtml,
+  });
+
+  return middleware(c, next);
+});
+app.route('/prices', pricewatch.app);
 
 // =============================================================================
 // PROTECTED ROUTES: Cloudflare Access authentication required
@@ -506,6 +534,13 @@ async function scheduled(
     await monitor.runChecks(env);
   } catch (err) {
     console.error('[cron] Monitoring checks failed:', err);
+  }
+
+  // Run price tracking checks
+  try {
+    await pricewatch.runChecks(env);
+  } catch (err) {
+    console.error('[cron] Price checks failed:', err);
   }
 }
 
